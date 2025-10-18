@@ -14,7 +14,137 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_analyses: {
+        Row: {
+          analysis_data: Json
+          created_at: string | null
+          date_range_end: string
+          date_range_start: string
+          file_names: string[]
+          id: string
+          sentiment_negative: number | null
+          sentiment_neutral: number | null
+          sentiment_positive: number | null
+          total_messages: number
+          total_users: number
+          user_id: string | null
+        }
+        Insert: {
+          analysis_data: Json
+          created_at?: string | null
+          date_range_end: string
+          date_range_start: string
+          file_names: string[]
+          id?: string
+          sentiment_negative?: number | null
+          sentiment_neutral?: number | null
+          sentiment_positive?: number | null
+          total_messages: number
+          total_users: number
+          user_id?: string | null
+        }
+        Update: {
+          analysis_data?: Json
+          created_at?: string | null
+          date_range_end?: string
+          date_range_start?: string
+          file_names?: string[]
+          id?: string
+          sentiment_negative?: number | null
+          sentiment_neutral?: number | null
+          sentiment_positive?: number | null
+          total_messages?: number
+          total_users?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      customer_profiles: {
+        Row: {
+          avg_sentiment_score: number | null
+          created_at: string | null
+          customer_identifier: string
+          engagement_level: string | null
+          id: string
+          key_topics: string[] | null
+          last_interaction_date: string | null
+          metadata: Json | null
+          total_interactions: number | null
+          total_messages_sent: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avg_sentiment_score?: number | null
+          created_at?: string | null
+          customer_identifier: string
+          engagement_level?: string | null
+          id?: string
+          key_topics?: string[] | null
+          last_interaction_date?: string | null
+          metadata?: Json | null
+          total_interactions?: number | null
+          total_messages_sent?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avg_sentiment_score?: number | null
+          created_at?: string | null
+          customer_identifier?: string
+          engagement_level?: string | null
+          id?: string
+          key_topics?: string[] | null
+          last_interaction_date?: string | null
+          metadata?: Json | null
+          total_interactions?: number | null
+          total_messages_sent?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      insights: {
+        Row: {
+          actionable_recommendations: string[] | null
+          analysis_id: string
+          created_at: string | null
+          description: string
+          id: string
+          insight_type: string
+          priority: string | null
+          title: string
+        }
+        Insert: {
+          actionable_recommendations?: string[] | null
+          analysis_id: string
+          created_at?: string | null
+          description: string
+          id?: string
+          insight_type: string
+          priority?: string | null
+          title: string
+        }
+        Update: {
+          actionable_recommendations?: string[] | null
+          analysis_id?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          insight_type?: string
+          priority?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insights_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "chat_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
