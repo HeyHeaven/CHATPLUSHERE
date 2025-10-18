@@ -2,16 +2,31 @@ import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { FileUpload } from "@/components/FileUpload";
 import { AnalyticsDashboard } from "@/components/AnalyticsDashboard";
+import { InsightsPanel } from "@/components/InsightsPanel";
+import { CustomerProfiles } from "@/components/CustomerProfiles";
+import { AuthWrapper } from "@/components/AuthWrapper";
 import { parseWhatsAppChat, analyzeChat } from "@/utils/chatParser";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, User, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Session } from "@supabase/supabase-js";
 
 type ViewState = 'hero' | 'upload' | 'dashboard';
 
 const Index = () => {
+  return (
+    <AuthWrapper>
+      {(session) => <IndexContent session={session} />}
+    </AuthWrapper>
+  );
+};
+
+const IndexContent = ({ session }: { session: Session }) => {
   const [view, setView] = useState<ViewState>('hero');
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const [insights, setInsights] = useState<any[]>([]);
+  const [customerProfiles, setCustomerProfiles] = useState<any[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
 
@@ -31,24 +46,123 @@ const Index = () => {
       // Analyze combined data
       const analysis = await analyzeChat(parsedChats);
       
-      // Mock sentiment data for now (will be replaced with AI analysis)
-      const mockSentiment = {
-        positive: Math.floor(Math.random() * 30) + 40, // 40-70%
-        neutral: Math.floor(Math.random() * 20) + 20,  // 20-40%
-        negative: 0,
+      // Call AI for sentiment and insights
+      const { data: aiAnalysis, error: aiError } = await supabase.functions.invoke('analyze-chat-ai', {
+        body: {
+          messages: analysis.messages,
+          totalMessages: analysis.totalMessages,
+          totalUsers: analysis.totalUsers,
+          topWords: analysis.topWords,
+          topEmojis: analysis.topEmojis,
+        },
+      });
+
+      if (aiError) throw aiError;
+
+      // Save analysis to database
+      const analysisDataForDb = {
+        ...analysis,
+        dateRange: {
+          start: analysis.dateRange.start.toISOString(),
+          end: analysis.dateRange.end.toISOString(),
+        },
+        messages: analysis.messages.map((m: any) => ({
+          ...m,
+          timestamp: m.timestamp.toISOString(),
+        })),
       };
-      mockSentiment.negative = 100 - mockSentiment.positive - mockSentiment.neutral;
+
+      const { data: savedAnalysis, error: saveError } = await supabase
+        .from('chat_analyses')
+        .insert([{
+          user_id: session.user.id,
+          file_names: files.map(f => f.name),
+          total_messages: analysis.totalMessages,
+          total_users: analysis.totalUsers,
+          date_range_start: analysis.dateRange.start.toISOString(),
+          date_range_end: analysis.dateRange.end.toISOString(),
+          sentiment_positive: aiAnalysis.sentiment.positive,
+          sentiment_neutral: aiAnalysis.sentiment.neutral,
+          sentiment_negative: aiAnalysis.sentiment.negative,
+          analysis_data: analysisDataForDb,
+        }])
+        .select()
+        .single();
+
+      if (saveError) throw saveError;
+
+      // Save insights
+      if (aiAnalysis.insights && aiAnalysis.insights.length > 0) {
+        const insightsToSave = aiAnalysis.insights.map((insight: any) => ({
+          analysis_id: savedAnalysis.id,
+          insight_type: insight.type,
+          title: insight.title,
+          description: insight.description,
+          priority: insight.priority,
+          actionable_recommendations: insight.recommendations,
+        }));
+
+        const { data: savedInsights, error: insightsError } = await supabase
+          .from('insights')
+          .insert(insightsToSave)
+          .select();
+
+        if (insightsError) throw insightsError;
+        setInsights(savedInsights);
+      }
+
+      // Update customer profiles
+      const userMessageCounts = new Map<string, number>();
+      analysis.messages.forEach((msg: any) => {
+        userMessageCounts.set(msg.user, (userMessageCounts.get(msg.user) || 0) + 1);
+      });
+
+      for (const [username, messageCount] of userMessageCounts.entries()) {
+        const avgSentiment = 
+          aiAnalysis.sentiment.positive > aiAnalysis.sentiment.negative ? 70 :
+          aiAnalysis.sentiment.neutral > 50 ? 50 : 30;
+
+        const engagementLevel = 
+          messageCount > analysis.totalMessages * 0.2 ? 'high' :
+          messageCount > analysis.totalMessages * 0.05 ? 'medium' : 'low';
+
+        await supabase
+          .from('customer_profiles')
+          .upsert({
+            user_id: session.user.id,
+            customer_identifier: username,
+            total_interactions: 1,
+            last_interaction_date: analysis.dateRange.end.toISOString(),
+            avg_sentiment_score: avgSentiment,
+            total_messages_sent: messageCount,
+            engagement_level: engagementLevel,
+            key_topics: analysis.topWords.slice(0, 5).map((w: any) => w[0]),
+          }, {
+            onConflict: 'user_id,customer_identifier',
+            ignoreDuplicates: false,
+          });
+      }
+
+      // Fetch updated profiles
+      const { data: profiles } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('total_messages_sent', { ascending: false })
+        .limit(10);
+
+      if (profiles) setCustomerProfiles(profiles);
 
       setAnalysisData({
         ...analysis,
-        sentiment: mockSentiment,
+        sentiment: aiAnalysis.sentiment,
       });
 
       setView('dashboard');
       
       toast({
         title: "Analysis complete!",
-        description: `Successfully analyzed ${analysis.totalMessages} messages from ${analysis.totalUsers} users.`,
+        description: `Successfully analyzed ${analysis.totalMessages} messages with AI-powered insights.`,
       });
     } catch (error) {
       console.error('Analysis error:', error);
@@ -72,7 +186,16 @@ const Index = () => {
 
   const handleNewAnalysis = () => {
     setAnalysisData(null);
+    setInsights([]);
     setView('upload');
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You've been successfully signed out.",
+    });
   };
 
   return (
@@ -84,11 +207,18 @@ const Index = () => {
               <ArrowLeft className="h-4 w-4" />
               Back
             </Button>
-            {view === 'dashboard' && (
-              <Button onClick={handleNewAnalysis} variant="outline">
-                New Analysis
+            <div className="flex items-center gap-2">
+              {view === 'dashboard' && (
+                <Button onClick={handleNewAnalysis} variant="outline">
+                  New Analysis
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">{session.user.email}</span>
+                <LogOut className="h-4 w-4" />
               </Button>
-            )}
+            </div>
           </div>
         </div>
       )}
@@ -106,10 +236,20 @@ const Index = () => {
       {view === 'hero' && <Hero onGetStarted={handleGetStarted} />}
       {view === 'upload' && <FileUpload onFilesSelected={handleFilesSelected} />}
       {view === 'dashboard' && analysisData && (
-        <AnalyticsDashboard 
-          data={analysisData} 
-          sentimentData={analysisData.sentiment}
-        />
+        <div className="container mx-auto px-4 py-8 space-y-8">
+          <AnalyticsDashboard 
+            data={analysisData} 
+            sentimentData={analysisData.sentiment}
+          />
+          
+          {insights.length > 0 && (
+            <InsightsPanel insights={insights} />
+          )}
+          
+          {customerProfiles.length > 0 && (
+            <CustomerProfiles profiles={customerProfiles} />
+          )}
+        </div>
       )}
     </div>
   );
