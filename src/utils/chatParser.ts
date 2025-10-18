@@ -99,7 +99,25 @@ export const parseWhatsAppChat = async (file: File): Promise<ParsedChatData> => 
   };
 };
 
-export const analyzeChat = (parsedData: ParsedChatData[]) => {
+// Load stop words from file
+let stopWords = new Set<string>();
+const loadStopWords = async () => {
+  try {
+    const response = await fetch('/src/assets/stop_hinglish.txt');
+    const text = await response.text();
+    stopWords = new Set(text.split('\n').map(word => word.trim().toLowerCase()).filter(word => word.length > 0));
+  } catch (error) {
+    console.warn('Failed to load stop words, using default set');
+    stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were']);
+  }
+};
+
+export const analyzeChat = async (parsedData: ParsedChatData[]) => {
+  // Load stop words if not already loaded
+  if (stopWords.size === 0) {
+    await loadStopWords();
+  }
+
   const allMessages = parsedData.flatMap(d => d.messages);
   const allUsers = new Set(parsedData.flatMap(d => Array.from(d.users)));
   
@@ -118,7 +136,6 @@ export const analyzeChat = (parsedData: ParsedChatData[]) => {
   
   // Word frequency
   const wordCounts = new Map<string, number>();
-  const stopWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'i', 'you', 'he', 'she', 'it', 'we', 'they', 'this', 'that', 'these', 'those']);
   
   allMessages.forEach(msg => {
     const words = msg.message.toLowerCase().split(/\s+/);

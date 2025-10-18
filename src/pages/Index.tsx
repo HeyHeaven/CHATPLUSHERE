@@ -29,7 +29,7 @@ const Index = () => {
       );
 
       // Analyze combined data
-      const analysis = analyzeChat(parsedChats);
+      const analysis = await analyzeChat(parsedChats);
       
       // Mock sentiment data for now (will be replaced with AI analysis)
       const mockSentiment = {
