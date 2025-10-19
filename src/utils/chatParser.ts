@@ -10,6 +10,24 @@ export interface ParsedChatData {
   dateRange: { start: Date; end: Date };
 }
 
+// Filter out system messages and clean text
+const isSystemMessage = (text: string): boolean => {
+  const systemPatterns = [
+    /messages and calls are end-to-end encrypted/i,
+    /security code changed/i,
+    /created group/i,
+    /added you/i,
+    /changed the subject/i,
+    /changed this group's icon/i,
+    /left/i,
+    /removed/i,
+    /media omitted/i,
+    /deleted this message/i,
+    /this message was deleted/i,
+  ];
+  return systemPatterns.some(pattern => pattern.test(text));
+};
+
 export const parseWhatsAppChat = async (file: File): Promise<ParsedChatData> => {
   const text = await file.text();
   const lines = text.split('\n');
@@ -31,6 +49,9 @@ export const parseWhatsAppChat = async (file: File): Promise<ParsedChatData> => 
     if (match) {
       try {
         const [, dateStr, timeStr, username, message] = match;
+        
+        // Skip system messages
+        if (isSystemMessage(message)) continue;
         
         // Parse date (handle various formats)
         const dateParts = dateStr.split(/[\/\-\.]/);
@@ -70,10 +91,13 @@ export const parseWhatsAppChat = async (file: File): Promise<ParsedChatData> => 
           const cleanUsername = username.trim();
           users.add(cleanUsername);
           
+          // Clean the message text
+          const cleanMessage = message.trim();
+          
           messages.push({
             timestamp,
             user: cleanUsername,
-            message: message.trim(),
+            message: cleanMessage,
           });
 
           if (!minDate || timestamp < minDate) minDate = timestamp;

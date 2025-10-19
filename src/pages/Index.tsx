@@ -1,18 +1,17 @@
 import { useState } from "react";
 import { Hero } from "@/components/Hero";
 import { FileUpload } from "@/components/FileUpload";
-import { AnalyticsDashboard } from "@/components/AnalyticsDashboard";
-import { InsightsPanel } from "@/components/InsightsPanel";
-import { CustomerProfiles } from "@/components/CustomerProfiles";
+import { ResultsTabs } from "@/components/ResultsTabs";
 import { AuthWrapper } from "@/components/AuthWrapper";
+import { ReportsHistory } from "@/components/ReportsHistory";
 import { parseWhatsAppChat, analyzeChat } from "@/utils/chatParser";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, User, LogOut } from "lucide-react";
+import { ArrowLeft, Loader2, User, LogOut, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Session } from "@supabase/supabase-js";
 
-type ViewState = 'hero' | 'upload' | 'dashboard';
+type ViewState = 'hero' | 'upload' | 'dashboard' | 'history';
 
 const Index = () => {
   return (
@@ -177,10 +176,62 @@ const IndexContent = ({ session }: { session: Session }) => {
   };
 
   const handleBack = () => {
-    if (view === 'dashboard') {
+    if (view === 'dashboard' || view === 'history') {
       setView('upload');
     } else if (view === 'upload') {
       setView('hero');
+    }
+  };
+
+  const handleViewHistory = () => {
+    setView('history');
+  };
+
+  const handleViewReport = async (reportId: string) => {
+    try {
+      const { data: report, error } = await supabase
+        .from('chat_analyses')
+        .select('*, insights(*)')
+        .eq('id', reportId)
+        .single();
+
+      if (error) throw error;
+
+      const { data: profiles } = await supabase
+        .from('customer_profiles')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('total_messages_sent', { ascending: false })
+        .limit(10);
+
+      const analysisData = report.analysis_data as any;
+      
+      setAnalysisData({
+        ...analysisData,
+        sentiment: {
+          positive: report.sentiment_positive,
+          neutral: report.sentiment_neutral,
+          negative: report.sentiment_negative,
+        },
+        dateRange: {
+          start: new Date(report.date_range_start),
+          end: new Date(report.date_range_end),
+        },
+        messages: analysisData?.messages?.map((m: any) => ({
+          ...m,
+          timestamp: new Date(m.timestamp)
+        })) || [],
+      });
+      setInsights(report.insights || []);
+      setCustomerProfiles(profiles || []);
+      setView('dashboard');
+    } catch (error) {
+      console.error('Error loading report:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load report",
+        variant: "destructive",
+      });
     }
   };
 
@@ -209,8 +260,20 @@ const IndexContent = ({ session }: { session: Session }) => {
             </Button>
             <div className="flex items-center gap-2">
               {view === 'dashboard' && (
-                <Button onClick={handleNewAnalysis} variant="outline">
-                  New Analysis
+                <>
+                  <Button onClick={handleNewAnalysis} variant="outline">
+                    New Analysis
+                  </Button>
+                  <Button onClick={handleViewHistory} variant="outline" className="gap-2">
+                    <History className="h-4 w-4" />
+                    History
+                  </Button>
+                </>
+              )}
+              {view === 'upload' && (
+                <Button onClick={handleViewHistory} variant="outline" className="gap-2">
+                  <History className="h-4 w-4" />
+                  History
                 </Button>
               )}
               <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
@@ -235,20 +298,18 @@ const IndexContent = ({ session }: { session: Session }) => {
 
       {view === 'hero' && <Hero onGetStarted={handleGetStarted} />}
       {view === 'upload' && <FileUpload onFilesSelected={handleFilesSelected} />}
+      {view === 'history' && (
+        <div className="container mx-auto px-4 py-8">
+          <ReportsHistory userId={session.user.id} onViewReport={handleViewReport} />
+        </div>
+      )}
       {view === 'dashboard' && analysisData && (
-        <div className="container mx-auto px-4 py-8 space-y-8">
-          <AnalyticsDashboard 
-            data={analysisData} 
-            sentimentData={analysisData.sentiment}
+        <div className="container mx-auto px-4 py-8">
+          <ResultsTabs
+            analysisData={analysisData}
+            insights={insights}
+            customerProfiles={customerProfiles}
           />
-          
-          {insights.length > 0 && (
-            <InsightsPanel insights={insights} />
-          )}
-          
-          {customerProfiles.length > 0 && (
-            <CustomerProfiles profiles={customerProfiles} />
-          )}
         </div>
       )}
     </div>
