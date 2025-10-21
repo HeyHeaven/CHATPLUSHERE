@@ -9,7 +9,9 @@ import { ReportsHistory } from "@/components/ReportsHistory";
 import { Dashboard } from "./Dashboard";
 import { parseWhatsAppChat, analyzeChat } from "@/utils/chatParser";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import { UploadedChats } from "@/components/UploadedChats";
+import { Button } from "@/components/ui/button";
 
 const MainApp = () => {
   const [session, setSession] = useState<Session | null>(null);
@@ -41,8 +43,38 @@ const MainApp = () => {
     if (!session) return;
     
     setIsAnalyzing(true);
+    
+    // Track uploaded chat IDs for error handling
+    const uploadedChatIds: string[] = [];
 
     try {
+      // Upload files to storage and create records
+      
+      for (const file of files) {
+        const filePath = `${session.user.id}/${Date.now()}_${file.name}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from("chat-files")
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: chatRecord, error: recordError } = await supabase
+          .from("uploaded_chats")
+          .insert({
+            user_id: session.user.id,
+            file_name: file.name,
+            file_path: filePath,
+            file_size: file.size,
+            analysis_status: "processing",
+          })
+          .select()
+          .single();
+
+        if (recordError) throw recordError;
+        uploadedChatIds.push(chatRecord.id);
+      }
+
       const parsedChats = await Promise.all(
         files.map((file) => parseWhatsAppChat(file))
       );
@@ -94,6 +126,17 @@ const MainApp = () => {
         .single();
 
       if (saveError) throw saveError;
+
+      // Update uploaded chat records with analysis ID
+      for (const chatId of uploadedChatIds) {
+        await supabase
+          .from("uploaded_chats")
+          .update({
+            analysis_id: savedAnalysis.id,
+            analysis_status: "completed",
+          })
+          .eq("id", chatId);
+      }
 
       if (aiAnalysis.insights && aiAnalysis.insights.length > 0) {
         const insightsToSave = aiAnalysis.insights.map((insight: any) => ({
@@ -172,6 +215,15 @@ const MainApp = () => {
       });
     } catch (error) {
       console.error("Analysis error:", error);
+      
+      // Mark uploaded chats as failed
+      for (const chatId of uploadedChatIds) {
+        await supabase
+          .from("uploaded_chats")
+          .update({ analysis_status: "failed" })
+          .eq("id", chatId);
+      }
+      
       toast({
         title: "Analysis failed",
         description:
@@ -247,11 +299,26 @@ const MainApp = () => {
     return <Navigate to="/auth" replace />;
   }
 
+  const handleNewAnalysis = () => {
+    setAnalysisData(null);
+    setInsights([]);
+    setCustomerProfiles([]);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       
       <main className="flex-1 overflow-auto bg-background">
+        {/* Header with New Analysis button */}
+        {analysisData && (
+          <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4">
+            <Button onClick={handleNewAnalysis} className="gap-2">
+              <Plus className="h-4 w-4" />
+              New Analysis
+            </Button>
+          </div>
+        )}
         {isAnalyzing && (
           <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center">
             <div className="bg-card p-8 rounded-lg shadow-lg text-center space-y-4">
@@ -280,7 +347,17 @@ const MainApp = () => {
             }
           />
           <Route path="/profile" element={<Dashboard session={session} />} />
-          <Route path="/chats" element={<div className="p-8">Uploaded Chats (Coming Soon)</div>} />
+          <Route
+            path="/chats"
+            element={
+              <div className="container mx-auto px-4 py-8">
+                <UploadedChats
+                  userId={session.user.id}
+                  onViewAnalysis={handleViewReport}
+                />
+              </div>
+            }
+          />
           <Route
             path="/reports"
             element={

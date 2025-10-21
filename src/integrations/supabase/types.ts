@@ -145,6 +145,53 @@ export type Database = {
           },
         ]
       }
+      uploaded_chats: {
+        Row: {
+          analysis_id: string | null
+          analysis_status: string | null
+          created_at: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          updated_at: string | null
+          upload_date: string
+          user_id: string
+        }
+        Insert: {
+          analysis_id?: string | null
+          analysis_status?: string | null
+          created_at?: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          updated_at?: string | null
+          upload_date?: string
+          user_id: string
+        }
+        Update: {
+          analysis_id?: string | null
+          analysis_status?: string | null
+          created_at?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          updated_at?: string | null
+          upload_date?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "uploaded_chats_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "chat_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
