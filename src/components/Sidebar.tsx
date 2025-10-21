@@ -26,7 +26,6 @@ export const Sidebar = () => {
     { icon: User, label: "Profile", path: "/app/profile" },
     { icon: FileText, label: "Uploaded Chats", path: "/app/chats" },
     { icon: BarChart3, label: "Reports", path: "/app/reports" },
-    { icon: Settings, label: "Settings", path: "/app/settings" },
   ];
 
   const handleSignOut = async () => {
@@ -44,7 +43,7 @@ export const Sidebar = () => {
     <div
       className={cn(
         "h-screen bg-card border-r border-border flex flex-col transition-all duration-300",
-        collapsed ? "w-20" : "w-64"
+        collapsed ? "w-20" : "w-64",
       )}
     >
       {/* Header */}
@@ -76,7 +75,7 @@ export const Sidebar = () => {
               variant={active ? "secondary" : "ghost"}
               className={cn(
                 "w-full justify-start gap-3",
-                active && "bg-primary/10 text-primary hover:bg-primary/20"
+                active && "bg-primary/10 text-primary hover:bg-primary/20",
               )}
               onClick={() => navigate(item.path)}
             >
