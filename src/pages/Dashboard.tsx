@@ -4,7 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, PieChart, Settings, LogOut, Upload, User } from "lucide-react";
+import {
+  FileText,
+  PieChart,
+  Settings,
+  LogOut,
+  Upload,
+  User,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Session } from "@supabase/supabase-js";
 
@@ -27,27 +34,28 @@ export const Dashboard = ({ session }: DashboardProps) => {
 
   const loadStats = async () => {
     const { data: analyses } = await supabase
-      .from('chat_analyses')
-      .select('id, total_messages')
-      .eq('user_id', session.user.id);
+      .from("chat_analyses")
+      .select("id, total_messages")
+      .eq("user_id", session.user.id);
 
-    const analysisIds = analyses?.map(a => a.id) || [];
-    
+    const analysisIds = analyses?.map((a) => a.id) || [];
+
     const { data: insights } = await supabase
-      .from('insights')
-      .select('id')
-      .in('analysis_id', analysisIds);
+      .from("insights")
+      .select("id")
+      .in("analysis_id", analysisIds);
 
     setStats({
       totalChats: analyses?.length || 0,
       totalReports: analyses?.length || 0,
-      totalMessages: analyses?.reduce((sum, a) => sum + a.total_messages, 0) || 0,
+      totalMessages:
+        analyses?.reduce((sum, a) => sum + a.total_messages, 0) || 0,
     });
   };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate('/');
+    navigate("/");
     toast({
       title: "Signed out",
       description: "You've been successfully signed out.",
@@ -65,11 +73,20 @@ export const Dashboard = ({ session }: DashboardProps) => {
               <h1 className="text-2xl font-bold">ChatSense AI</h1>
             </div>
             <div className="flex items-center gap-2">
-              <Button onClick={() => navigate('/')} variant="default" className="gap-2">
+              <Button
+                onClick={() => navigate("/")}
+                variant="default"
+                className="gap-2"
+              >
                 <Upload className="h-4 w-4" />
                 New Analysis
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="gap-2"
+              >
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">{session.user.email}</span>
                 <LogOut className="h-4 w-4" />
@@ -108,7 +125,9 @@ export const Dashboard = ({ session }: DashboardProps) => {
                     <PieChart className="h-6 w-6 text-accent" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Reports Generated</p>
+                    <p className="text-sm text-muted-foreground">
+                      Reports Generated
+                    </p>
                     <p className="text-2xl font-bold">{stats.totalReports}</p>
                   </div>
                 </div>
@@ -120,19 +139,24 @@ export const Dashboard = ({ session }: DashboardProps) => {
                     <FileText className="h-6 w-6 text-success" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Messages Analyzed</p>
-                    <p className="text-2xl font-bold">{stats.totalMessages.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Messages Analyzed
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {stats.totalMessages.toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </Card>
             </div>
 
             <Card className="p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4">Welcome to ChatSense AI</h2>
+              <h2 className="text-2xl font-bold mb-4">Welcome to ChatPlus</h2>
               <p className="text-muted-foreground mb-6">
-                Start analyzing WhatsApp chats to gain actionable business insights
+                Start analyzing WhatsApp chats to gain actionable business
+                insights
               </p>
-              <Button onClick={() => navigate('/')} size="lg" className="gap-2">
+              <Button onClick={() => navigate("/")} size="lg" className="gap-2">
                 <Upload className="h-5 w-5" />
                 Upload New Chat
               </Button>
@@ -141,8 +165,12 @@ export const Dashboard = ({ session }: DashboardProps) => {
 
           <TabsContent value="reports">
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Reports will be shown here</h2>
-              <p className="text-muted-foreground">Your analysis reports will appear in this section</p>
+              <h2 className="text-xl font-semibold mb-4">
+                Reports will be shown here
+              </h2>
+              <p className="text-muted-foreground">
+                Your analysis reports will appear in this section
+              </p>
             </Card>
           </TabsContent>
 
@@ -159,7 +187,9 @@ export const Dashboard = ({ session }: DashboardProps) => {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Account ID</label>
-                  <p className="text-muted-foreground text-xs">{session.user.id}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {session.user.id}
+                  </p>
                 </div>
               </div>
             </Card>
