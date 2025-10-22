@@ -49,8 +49,8 @@ export const Sidebar = () => {
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center justify-between">
         {!collapsed && (
-          <h2 className="text-lg font-bold gradient-primary bg-clip-text text-transparent">
-            ChatSense AI
+          <h2 className="text-lg font-bold text-primary">
+            ChatPlus
           </h2>
         )}
         <Button

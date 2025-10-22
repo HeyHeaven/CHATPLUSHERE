@@ -32,7 +32,7 @@ export default function Landing() {
         <div className="container relative z-10 px-4 py-20">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-up">
             <div className="inline-block px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-4">
-              <span className="text-sm font-medium text-primary">ChatSense AI</span>
+              <span className="text-sm font-medium text-primary">ChatPlus</span>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
@@ -88,7 +88,7 @@ export default function Landing() {
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              What ChatSense AI Does
+              What ChatPlus Does
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Transform raw WhatsApp conversations into structured, actionable business insights using advanced AI and machine learning
@@ -148,9 +148,9 @@ export default function Landing() {
                   1
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-center">Upload Chat</h3>
+               <h3 className="text-xl font-semibold mb-3 text-center">Upload Chat</h3>
               <p className="text-muted-foreground text-center">
-                Export your WhatsApp chat as a .txt file and upload it to ChatSense AI
+                Export your WhatsApp chat as a .txt file and upload it to ChatPlus
               </p>
               {/* Connector line */}
               <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-border" />
@@ -261,7 +261,7 @@ export default function Landing() {
                 Ready to Transform Your Conversations?
               </h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join businesses worldwide using ChatSense AI to unlock valuable insights from their customer conversations
+                Join businesses worldwide using ChatPlus to unlock valuable insights from their customer conversations
               </p>
               <Button 
                 size="lg"
@@ -281,14 +281,14 @@ export default function Landing() {
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-center md:text-left">
-              <p className="font-semibold text-lg">ChatSense AI</p>
+              <p className="font-semibold text-lg">ChatPlus</p>
               <p className="text-sm text-muted-foreground">
-                Transform conversations into intelligence
+                WhatsApp Chat Analyzer powered by AI
               </p>
             </div>
             <div className="text-sm text-muted-foreground text-center md:text-right">
-              <p>© 2025 ChatSense AI. All rights reserved.</p>
-              <p className="mt-1">Built with AI & powered by insights</p>
+              <p>© 2025 ChatPlus. All rights reserved.</p>
+              <p className="mt-1">Transform WhatsApp conversations into intelligence</p>
             </div>
           </div>
         </div>
