@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { Sidebar } from "@/components/Sidebar";
@@ -14,6 +14,7 @@ import { UploadedChats } from "@/components/UploadedChats";
 import { Button } from "@/components/ui/button";
 
 const MainApp = () => {
+  const navigate = useNavigate();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [analysisData, setAnalysisData] = useState<any>(null);
@@ -277,6 +278,9 @@ const MainApp = () => {
       });
       setInsights(report.insights || []);
       setCustomerProfiles(profiles || []);
+      
+      // Navigate to home page to show the analysis
+      navigate("/app");
     } catch (error) {
       console.error("Error loading report:", error);
       toast({

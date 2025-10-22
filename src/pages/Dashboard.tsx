@@ -70,7 +70,7 @@ export const Dashboard = ({ session }: DashboardProps) => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <PieChart className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold">ChatSense AI</h1>
+              <h1 className="text-2xl font-bold">ChatPlus</h1>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -99,9 +99,8 @@ export const Dashboard = ({ session }: DashboardProps) => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -163,6 +162,7 @@ export const Dashboard = ({ session }: DashboardProps) => {
             </Card>
           </TabsContent>
 
+          {/* Optional reports tab if you want to keep it */}
           <TabsContent value="reports">
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">

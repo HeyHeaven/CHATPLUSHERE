@@ -81,7 +81,7 @@ export default function Auth() {
             <p className="text-muted-foreground">
               {isLogin
                 ? "Sign in to access your analytics dashboard"
-                : "Get started with ChatSense AI"}
+                : "Get started with ChatPlus"}
             </p>
           </div>
 
