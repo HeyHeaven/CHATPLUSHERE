@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { 
-  Upload, 
-  BarChart3, 
-  MessageSquare, 
-  TrendingUp, 
-  Shield, 
+import {
+  Upload,
+  BarChart3,
+  MessageSquare,
+  TrendingUp,
+  Shield,
   Zap,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 import heroImage from "@/assets/hero-analytics.jpg";
 
@@ -21,9 +21,9 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img 
-            src={heroImage} 
-            alt="Analytics Dashboard" 
+          <img
+            src={heroImage}
+            alt="Analytics Dashboard"
             className="w-full h-full object-cover opacity-20"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80" />
@@ -31,35 +31,39 @@ export default function Landing() {
 
         <div className="container relative z-10 px-4 py-20">
           <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-up">
-            <div className="inline-block px-4 py-2 bg-primary/10 rounded-full border border-primary/20 mb-4">
-              <span className="text-sm font-medium text-primary">ChatPlus</span>
-            </div>
-            
+            <img
+              src="/vertical-logo.png"
+              alt="ChatPlus Logo"
+              className="h-24 mx-auto mb-8"
+            />
+
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
               Turn WhatsApp Conversations into
               <span className="block mt-2 gradient-primary bg-clip-text text-transparent">
                 Business Intelligence
               </span>
             </h1>
-            
+
             <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Analyze customer conversations with AI-powered sentiment analysis, discover actionable insights, and make data-driven decisions to grow your business.
+              Analyze customer conversations with AI-powered sentiment analysis,
+              discover actionable insights, and make data-driven decisions to
+              grow your business.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-              <Button 
-                size="lg" 
-                onClick={() => navigate('/auth')}
+              <Button
+                size="lg"
+                onClick={() => navigate("/auth")}
                 className="text-lg px-8 py-6 shadow-glow hover:scale-105 transition-transform"
               >
                 <Upload className="mr-2 h-5 w-5" />
                 Start Analyzing
               </Button>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 variant="outline"
                 className="text-lg px-8 py-6"
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate("/auth")}
               >
                 View Demo
               </Button>
@@ -91,7 +95,8 @@ export default function Landing() {
               What ChatPlus Does
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Transform raw WhatsApp conversations into structured, actionable business insights using advanced AI and machine learning
+              Transform raw WhatsApp conversations into structured, actionable
+              business insights using advanced AI and machine learning
             </p>
           </div>
 
@@ -102,7 +107,8 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Sentiment Analysis</h3>
               <p className="text-muted-foreground">
-                Understand customer emotions with AI-powered sentiment detection across all conversations
+                Understand customer emotions with AI-powered sentiment detection
+                across all conversations
               </p>
             </Card>
 
@@ -112,7 +118,8 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Deep Analytics</h3>
               <p className="text-muted-foreground">
-                Get comprehensive metrics on message patterns, user activity, and conversation trends
+                Get comprehensive metrics on message patterns, user activity,
+                and conversation trends
               </p>
             </Card>
 
@@ -122,7 +129,8 @@ export default function Landing() {
               </div>
               <h3 className="text-xl font-semibold mb-3">Business Insights</h3>
               <p className="text-muted-foreground">
-                Receive actionable recommendations to improve customer satisfaction and business performance
+                Receive actionable recommendations to improve customer
+                satisfaction and business performance
               </p>
             </Card>
           </div>
@@ -137,7 +145,8 @@ export default function Landing() {
               How It Works
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Three simple steps to unlock powerful insights from your WhatsApp conversations
+              Three simple steps to unlock powerful insights from your WhatsApp
+              conversations
             </p>
           </div>
 
@@ -148,9 +157,12 @@ export default function Landing() {
                   1
                 </div>
               </div>
-               <h3 className="text-xl font-semibold mb-3 text-center">Upload Chat</h3>
+              <h3 className="text-xl font-semibold mb-3 text-center">
+                Upload Chat
+              </h3>
               <p className="text-muted-foreground text-center">
-                Export your WhatsApp chat as a .txt file and upload it to ChatPlus
+                Export your WhatsApp chat as a .txt file and upload it to
+                ChatPlus
               </p>
               {/* Connector line */}
               <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-border" />
@@ -162,9 +174,12 @@ export default function Landing() {
                   2
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-center">AI Processing</h3>
+              <h3 className="text-xl font-semibold mb-3 text-center">
+                AI Processing
+              </h3>
               <p className="text-muted-foreground text-center">
-                Our AI cleans and analyzes your data using advanced machine learning models
+                Our AI cleans and analyzes your data using advanced machine
+                learning models
               </p>
               <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-0.5 bg-border" />
             </div>
@@ -175,9 +190,12 @@ export default function Landing() {
                   3
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-center">Get Insights</h3>
+              <h3 className="text-xl font-semibold mb-3 text-center">
+                Get Insights
+              </h3>
               <p className="text-muted-foreground text-center">
-                View comprehensive analytics and AI-powered business recommendations instantly
+                View comprehensive analytics and AI-powered business
+                recommendations instantly
               </p>
             </div>
           </div>
@@ -195,7 +213,8 @@ export default function Landing() {
               Your Privacy, Our Priority
             </h2>
             <p className="text-xl text-muted-foreground">
-              We take data security seriously. Your conversations are safe with us.
+              We take data security seriously. Your conversations are safe with
+              us.
             </p>
           </div>
 
@@ -206,7 +225,8 @@ export default function Landing() {
                 <div>
                   <h3 className="font-semibold mb-2">End-to-End Encryption</h3>
                   <p className="text-sm text-muted-foreground">
-                    All data transfers are encrypted using industry-standard protocols
+                    All data transfers are encrypted using industry-standard
+                    protocols
                   </p>
                 </div>
               </div>
@@ -218,7 +238,8 @@ export default function Landing() {
                 <div>
                   <h3 className="font-semibold mb-2">No Permanent Storage</h3>
                   <p className="text-sm text-muted-foreground">
-                    Your chat data is processed temporarily and not stored on our servers
+                    Your chat data is processed temporarily and not stored on
+                    our servers
                   </p>
                 </div>
               </div>
@@ -230,7 +251,8 @@ export default function Landing() {
                 <div>
                   <h3 className="font-semibold mb-2">GDPR Compliant</h3>
                   <p className="text-sm text-muted-foreground">
-                    We follow strict data protection regulations and privacy standards
+                    We follow strict data protection regulations and privacy
+                    standards
                   </p>
                 </div>
               </div>
@@ -261,11 +283,12 @@ export default function Landing() {
                 Ready to Transform Your Conversations?
               </h2>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join businesses worldwide using ChatPlus to unlock valuable insights from their customer conversations
+                Join businesses worldwide using ChatPlus to unlock valuable
+                insights from their customer conversations
               </p>
-              <Button 
+              <Button
                 size="lg"
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate("/auth")}
                 className="text-lg px-8 py-6 shadow-glow hover:scale-105 transition-transform"
               >
                 Get Started Now
@@ -288,7 +311,9 @@ export default function Landing() {
             </div>
             <div className="text-sm text-muted-foreground text-center md:text-right">
               <p>© 2025 ChatPlus. All rights reserved.</p>
-              <p className="mt-1">Transform WhatsApp conversations into intelligence</p>
+              <p className="mt-1">
+                Transform WhatsApp conversations into intelligence
+              </p>
             </div>
           </div>
         </div>
