@@ -32,7 +32,7 @@ export const ResultsTabs = ({ analysisData, insights, customerProfiles }: Result
       // Title
       pdf.setFontSize(24);
       pdf.setTextColor(59, 130, 246);
-      pdf.text('ChatSense AI Report', pageWidth / 2, yPosition, { align: 'center' });
+      pdf.text('ChatPlus Report', pageWidth / 2, yPosition, { align: 'center' });
       yPosition += 15;
 
       // Date Range
@@ -125,7 +125,7 @@ export const ResultsTabs = ({ analysisData, insights, customerProfiles }: Result
       }
 
       // Save PDF
-      pdf.save(`chatsense-report-${new Date().getTime()}.pdf`);
+      pdf.save(`chatplus-report-${new Date().getTime()}.pdf`);
 
       toast({
         title: "PDF Downloaded",
