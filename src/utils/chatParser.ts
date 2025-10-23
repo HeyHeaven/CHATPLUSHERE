@@ -28,6 +28,63 @@ const isSystemMessage = (text: string): boolean => {
   return systemPatterns.some(pattern => pattern.test(text));
 };
 
+// Enhanced text cleaning function to remove noise and unnecessary content
+const cleanMessageText = (text: string): string => {
+  let cleaned = text;
+  
+  // Remove URLs
+  cleaned = cleaned.replace(/https?:\/\/[^\s]+/gi, '');
+  cleaned = cleaned.replace(/www\.[^\s]+/gi, '');
+  
+  // Remove email addresses
+  cleaned = cleaned.replace(/[\w.-]+@[\w.-]+\.\w+/gi, '');
+  
+  // Remove phone numbers (various formats)
+  cleaned = cleaned.replace(/[\+]?[(]?[0-9]{1,4}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,9}/g, '');
+  
+  // Remove media indicators
+  cleaned = cleaned.replace(/<media omitted>/gi, '');
+  cleaned = cleaned.replace(/<this message was edited>/gi, '');
+  cleaned = cleaned.replace(/<attached: .+?>/gi, '');
+  cleaned = cleaned.replace(/\[media omitted\]/gi, '');
+  cleaned = cleaned.replace(/\[this message was edited\]/gi, '');
+  
+  // Remove excessive punctuation (more than 2 consecutive)
+  cleaned = cleaned.replace(/([!?.]){3,}/g, '$1$1');
+  
+  // Remove special characters but keep language characters and basic punctuation
+  cleaned = cleaned.replace(/[^\w\s\u0900-\u097F\u0600-\u06FF,.!?'-]/g, ' ');
+  
+  // Remove standalone numbers
+  cleaned = cleaned.replace(/\b\d+\b/g, '');
+  
+  // Remove very short words (1-2 characters) that are likely noise
+  cleaned = cleaned.replace(/\b\w{1,2}\b/g, '');
+  
+  // Remove multiple spaces
+  cleaned = cleaned.replace(/\s+/g, ' ');
+  
+  // Trim
+  cleaned = cleaned.trim();
+  
+  return cleaned;
+};
+
+// Detect if a word is likely a name (starts with capital, not a common word)
+const isLikelyName = (word: string, stopWords: Set<string>): boolean => {
+  // If it's a stop word, it's not a name
+  if (stopWords.has(word.toLowerCase())) return false;
+  
+  // Check if it starts with a capital letter
+  if (!/^[A-Z]/.test(word)) return false;
+  
+  // Check if it's all capitals (likely an acronym, not a name)
+  if (word === word.toUpperCase() && word.length <= 4) return false;
+  
+  // If it's capitalized and not too long, it's likely a name
+  return word.length >= 3 && word.length <= 15;
+};
+
 export const parseWhatsAppChat = async (file: File): Promise<ParsedChatData> => {
   const text = await file.text();
   const lines = text.split('\n');
@@ -158,16 +215,33 @@ export const analyzeChat = async (parsedData: ParsedChatData[]) => {
   const sortedUsers = Array.from(userMessageCounts.entries())
     .sort((a, b) => b[1] - a[1]);
   
-  // Word frequency
+  // Word frequency with enhanced filtering
   const wordCounts = new Map<string, number>();
+  const detectedNames = new Set<string>();
   
   allMessages.forEach(msg => {
-    const words = msg.message.toLowerCase().split(/\s+/);
+    // Clean the message text first
+    const cleanedText = cleanMessageText(msg.message);
+    
+    // Split into words
+    const words = cleanedText.split(/\s+/);
+    
     words.forEach(word => {
-      const cleanWord = word.replace(/[^\w]/g, '');
-      if (cleanWord.length > 2 && !stopWords.has(cleanWord)) {
-        wordCounts.set(cleanWord, (wordCounts.get(cleanWord) || 0) + 1);
+      if (word.length <= 2) return;
+      
+      const lowerWord = word.toLowerCase();
+      
+      // Skip stop words
+      if (stopWords.has(lowerWord)) return;
+      
+      // Detect and filter names
+      if (isLikelyName(word, stopWords)) {
+        detectedNames.add(word);
+        return;
       }
+      
+      // Add to word frequency
+      wordCounts.set(lowerWord, (wordCounts.get(lowerWord) || 0) + 1);
     });
   });
   
@@ -212,6 +286,12 @@ export const analyzeChat = async (parsedData: ParsedChatData[]) => {
   const startDate = new Date(Math.min(...allDates.map(d => d.getTime())));
   const endDate = new Date(Math.max(...allDates.map(d => d.getTime())));
   
+  // Clean messages for AI analysis
+  const cleanedMessages = allMessages.map(msg => ({
+    ...msg,
+    message: cleanMessageText(msg.message)
+  })).filter(msg => msg.message.length > 10); // Only include meaningful messages
+  
   return {
     totalMessages,
     totalUsers,
@@ -227,6 +307,6 @@ export const analyzeChat = async (parsedData: ParsedChatData[]) => {
       mostActiveMonth,
     },
     dateRange: { start: startDate, end: endDate },
-    messages: allMessages,
+    messages: cleanedMessages, // Use cleaned messages for AI analysis
   };
 };
