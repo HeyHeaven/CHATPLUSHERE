@@ -1,73 +1,56 @@
-# Welcome to your Lovable project
+# ChatPlus
 
-## Project info
+ChatPlus is a powerful and intuitive chat analysis tool that provides valuable insights from your conversations. Upload your chat files and get detailed analytics, sentiment analysis, and more.
 
-**URL**: https://lovable.dev/projects/fe4df577-b8bd-4142-8191-248c269aa977
+## Features
 
-## How can I edit this code?
+- **Chat Analysis:** Analyze chat files to get insights into communication patterns.
+- **Sentiment Analysis:** Understand the sentiment of your conversations.
+- **Data Visualization:** Visualize chat data with beautiful charts and graphs.
+- **Export Reports:** Export analysis reports in PDF format.
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Vite**
+- **TypeScript**
+- **React**
+- **shadcn-ui**
+- **Tailwind CSS**
+- **Supabase**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/fe4df577-b8bd-4142-8191-248c269aa977) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+To get a local copy up and running, follow these simple steps.
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js & npm - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+1.  Clone the repo
+    ```sh
+    git clone https://github.com/your_username/chatplus.git
+    ```
+2.  Install NPM packages
+    ```sh
+    npm install
+    ```
+3.  Start the development server
+    ```sh
+    npm run dev
+    ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Contributing
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-# Step 3: Install the necessary dependencies.
-npm i
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Don't forget to give the project a star! Thanks again!
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/fe4df577-b8bd-4142-8191-248c269aa977) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
