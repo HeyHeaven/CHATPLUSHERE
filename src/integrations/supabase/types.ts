@@ -61,6 +61,7 @@ export type Database = {
       }
       customer_profiles: {
         Row: {
+          analysis_id: string | null
           avg_sentiment_score: number | null
           created_at: string | null
           customer_identifier: string
@@ -75,6 +76,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          analysis_id?: string | null
           avg_sentiment_score?: number | null
           created_at?: string | null
           customer_identifier: string
@@ -89,6 +91,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          analysis_id?: string | null
           avg_sentiment_score?: number | null
           created_at?: string | null
           customer_identifier?: string
@@ -102,7 +105,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customer_profiles_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "chat_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       insights: {
         Row: {
